@@ -1,0 +1,12 @@
+apply plugin: 'java'
+apply plugin: 'eclipse'
+
+version='0.0.1'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile group: "org.twitter4j", name: "twitter4j-core", version: "[4.0,)"
+}
