@@ -38,6 +38,7 @@ public class FetchTweets {
 	private static String oAuthAccessToken = "YOUR-ACCESS-TOKEN-GOES-HERE";
 	private static String oAuthAccessTokenSecret = "YOUR-ACCESS-TOKEN-SECRET-GOES-HERE";
 	
+	//This aint permanent
 	private static final String FILENAME1 = "C:\\Users\\User\\Desktop\\Vastech_Internship\\VerticaElasticSearch\\doc\\tweets.txt";
 	private static final String FILENAME2 = "C:\\Users\\User\\Desktop\\Vastech_Internship\\VerticaElasticSearch\\doc\\elasticsearch.txt";
 	
