@@ -37,9 +37,9 @@ public class FetchTweets {
 	private static String oAuthConsumerSecret = "YOUR-CONSUMER-SECRET-GOES-HERE";
 	private static String oAuthAccessToken = "YOUR-ACCESS-TOKEN-GOES-HERE";
 	private static String oAuthAccessTokenSecret = "YOUR-ACCESS-TOKEN-SECRET-GOES-HERE";
-
 	
-	private static final String FILENAME = "C:\\Users\\User\\Desktop\\Vastech_Internship\\VerticaElasticSearch\\doc\\tweets.txt";
+	private static final String FILENAME1 = "C:\\Users\\User\\Desktop\\Vastech_Internship\\VerticaElasticSearch\\doc\\tweets.txt";
+	private static final String FILENAME2 = "C:\\Users\\User\\Desktop\\Vastech_Internship\\VerticaElasticSearch\\doc\\elasticsearch.txt";
 	
 	
 	
@@ -59,6 +59,9 @@ public class FetchTweets {
 		
 		
 	}
+	
+	
+	
 	
 	
 	
@@ -123,9 +126,50 @@ public class FetchTweets {
 	
 	private static void writeTweetsToFile(Status status) throws InterruptedException, IOException {
 		
+		BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(FILENAME1));
+		BufferedWriter bw = new BufferedWriter(new FileWriter(FILENAME2));
 		
+		while(true){
+			bw.write(status.getId() + "----" + status.getText());
+			bw.newLine();
+			System.out.println((status.getId() + "|" + status.getText()));
+			
+			Tweet tweet = new Tweet();
+			tweet.setCreate_at(status.getCreatedAt());
+			tweet.setCurrentUserRetweetid(status.getCurrentUserRetweetId());
+			tweet.setFavouriteCount(status.getFavoriteCount());
+			tweet.setFavourited(status.isFavorited());
+			//tweet.setGeoLocation(status.getGeoLocation().toString());
+			tweet.setGetAccessLevel(status.getAccessLevel());
+			tweet.setId(status.getId());
+			tweet.setInReplyToScreenName(status.getInReplyToScreenName());
+			tweet.setInReplyToStatusId(status.getInReplyToStatusId());
+			tweet.setInReplyToUserId(status.getInReplyToUserId());
+			tweet.setLang(status.getLang());
+			//tweet.setPlace(status.getPlace().toString());
+			tweet.setPossiblySensitive(status.isPossiblySensitive());
+			//tweet.setQuotedStatus(status.getQuotedStatus().toString());
+			tweet.setQuotedStatusId(status.getQuotedStatusId());
+			//tweet.setRateLimitStatus(status.getRateLimitStatus().toString());
+			tweet.setRetweet(status.isRetweet());
+			tweet.setRetweetedByMe(status.isRetweetedByMe());
+			tweet.setSource(status.getSource().toString());
+			tweet.setTruncated(status.isTruncated());
+			
+			
+			bufferedWriter.write(tweet.getId() + "|" + tweet.getCreate_at() + "|" + tweet.getFavouriteCount() + "|" + tweet.getGetAccessLevel()
+			+ "|" + tweet.getInReplyToStatusId() + "|" + tweet.getInReplyToUserId() + "|" + tweet.getLang() + "|" + tweet.getSource() + "|" + tweet.isFavourited()
+			+ "|" + tweet.isPossiblySensitive() + "|" + tweet.isRetweet() + "|" + tweet.isRetweetedByMe() + "|" + tweet.isTruncated());
+			
+			bufferedWriter.newLine();
+			
+			
+			
+		}
 		
-		try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(FILENAME))) {
+		/**
+		
+		try () {
 			
 			while(true) {
 				
@@ -151,7 +195,8 @@ public class FetchTweets {
 				tweet.setSource(status.getSource().toString());
 				tweet.setTruncated(status.isTruncated());
 				
-				bufferedWriter.write(tweet.getId() + "|" + tweet.getCreate_at() + "|" + tweet.getFavouriteCount() + "|" + tweet.getGetAccessLevel()
+				
+				bufferedWriter1.write(tweet.getId() + "|" + tweet.getCreate_at() + "|" + tweet.getFavouriteCount() + "|" + tweet.getGetAccessLevel()
 				+ "|" + tweet.getInReplyToStatusId() + "|" + tweet.getInReplyToUserId() + "|" + tweet.getLang() + "|" + tweet.getSource() + "|" + tweet.isFavourited()
 				+ "|" + tweet.isPossiblySensitive() + "|" + tweet.isRetweet() + "|" + tweet.isRetweetedByMe() + "|" + tweet.isTruncated());
 				
@@ -160,7 +205,9 @@ public class FetchTweets {
 				
 				System.out.println(tweet.getId() + "|" + tweet.getCreate_at() + "|" + tweet.getFavouriteCount() + "|" + tweet.getGetAccessLevel() + "|" + tweet.getInReplyToScreenName()
 				+ "|" + tweet.getInReplyToStatusId() + "|" + tweet.getInReplyToUserId() + "|" + tweet.getLang() + "|" + tweet.getSource() + "|" + tweet.isFavourited()
-				+ "|" + tweet.isPossiblySensitive() + "|" + tweet.isRetweet() + "|" + tweet.isRetweetedByMe() + "|" + tweet.isTruncated() + "\n");
+				+ "|" + tweet.isPossiblySensitive() + "|" + tweet.isRetweet() + "|" + tweet.isRetweetedByMe() + "|" + tweet.isTruncated() + "\n"); 
+				
+				
 				
 				
 			}
@@ -169,6 +216,7 @@ public class FetchTweets {
 		} catch ( IOException e) {
 			e.printStackTrace();
 		}
+		*/
 		
 	
 		

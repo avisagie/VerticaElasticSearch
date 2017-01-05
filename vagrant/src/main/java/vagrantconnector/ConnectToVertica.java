@@ -5,13 +5,29 @@ import java.sql.Statement;
 import java.sql.SQLInvalidAuthorizationSpecException;
 import java.sql.SQLException;
 import java.sql.DriverManager;
+
+import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
+
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.sql.Connection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
+
+import org.elasticsearch.action.get.GetResponse;
+import org.elasticsearch.action.index.IndexResponse;
+import org.elasticsearch.client.transport.TransportClient;
+import org.elasticsearch.common.settings.Settings;
+import org.elasticsearch.common.transport.InetSocketTransportAddress;
+import org.elasticsearch.common.xcontent.XContentBuilder;
+import org.elasticsearch.transport.client.PreBuiltTransportClient;
 
 import com.vertica.jdbc.VerticaConnection;
 import com.vertica.jdbc.VerticaCopyStream;
@@ -20,7 +36,35 @@ import com.vertica.jdbc.VerticaCopyStream;
 
 public class ConnectToVertica {
 	
-	public static void main(String[] args) throws FileNotFoundException{
+	
+	
+	public ConnectToVertica() throws UnknownHostException {
+		
+		
+	}
+	
+	
+	private static void indexDocument( TransportClient client, String id, String tweet) throws IOException {
+		
+		XContentBuilder json = jsonBuilder()
+				.startObject()
+					.field("tweet", tweet)
+				.endObject();
+						
+	
+		IndexResponse response = client.prepareIndex("twitterdata", "tweets", id)
+						.setSource(json)
+						.get();
+		
+		System.out.println(response.toString());
+						
+	}
+	
+	
+	
+	
+	
+	public static void main(String[] args) throws IOException{
 		
 		
 		Properties properties = new Properties();
@@ -30,8 +74,36 @@ public class ConnectToVertica {
 		properties.put("binaryBatchInsert", "true");
 		properties.put("AutoCommit", "false");
 		
+		
+		Settings settings = Settings.builder()
+				.put("cluster.name", "tweets-cluster").build();
+		
+		
+		TransportClient transportClient = new PreBuiltTransportClient(settings)
+				.addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName("localhost"), 9300));
+				
+		
+		
 		Connection conn;
 		try {
+			
+			String currentLine;
+			BufferedReader bf = new BufferedReader(
+					new FileReader("C:\\Users\\User\\Desktop\\Vastech_Internship\\VerticaElasticSearch\\doc\\elasticsearch.txt"));
+			
+			while((currentLine = bf.readLine()) != null) {
+				
+				//System.out.println(currentLine);
+				String[] splitString = currentLine.split("----");
+				String id = splitString[0];
+				String text = splitString[1];
+				System.out.println(id + "- split -" + text);
+				indexDocument(transportClient, id, text);
+			}
+			transportClient.close();
+			
+			
+			
 			
 			conn = DriverManager.getConnection("jdbc:vertica://localhost:5433/mydatabase", properties);
 			System.out.println("Connected to the database");
