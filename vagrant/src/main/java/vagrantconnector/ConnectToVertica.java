@@ -74,19 +74,19 @@ public class ConnectToVertica {
 		properties.put("binaryBatchInsert", "true");
 		properties.put("AutoCommit", "false");
 		
-		
+		/**
 		Settings settings = Settings.builder()
 				.put("cluster.name", "tweets-cluster").build();
 		
 		
 		TransportClient transportClient = new PreBuiltTransportClient(settings)
 				.addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName("localhost"), 9300));
-				
+			*/	
 		
 		
 		Connection conn;
 		try {
-			
+			/**
 			String currentLine;
 			BufferedReader bf = new BufferedReader(
 					new FileReader("C:\\Users\\User\\Desktop\\Vastech_Internship\\VerticaElasticSearch\\doc\\elasticsearch.txt"));
@@ -101,6 +101,8 @@ public class ConnectToVertica {
 				indexDocument(transportClient, id, text);
 			}
 			transportClient.close();
+			*/
+			
 			
 			
 			
