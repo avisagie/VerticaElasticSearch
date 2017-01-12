@@ -6,6 +6,7 @@
  * Create Date: Fri Aug 19 15:51:20 2016
  */
 /* Build-time identification for VerticaSDKJava */
+
 package com.vertica.sdk;
 public class BuildInfo {
     public static final String VERTICA_BUILD_ID_Brand_Name       = "Vertica Analytic Database";
@@ -32,4 +33,5 @@ public class BuildInfo {
         return vbi;
     }
 }
+
 /* end of this file */

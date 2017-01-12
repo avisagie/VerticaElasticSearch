@@ -23,6 +23,7 @@ import java.util.Properties;
 
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexResponse;
+import org.elasticsearch.client.Client;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
@@ -44,17 +45,15 @@ public class ConnectToVertica {
 	}
 	
 	
-	private static void indexDocument( TransportClient client, String id, String tweet) throws IOException {
+	private static void indexDocument( Client client, String id, String tweet) throws IOException {
 		
 		XContentBuilder json = jsonBuilder()
 				.startObject()
 					.field("tweet", tweet)
-				.endObject();
-						
+				.endObject();		
 	
 		IndexResponse response = client.prepareIndex("twitterdata", "tweets", id)
-						.setSource(json)
-						.get();
+						.setSource(json).get();
 		
 		System.out.println(response.toString());
 						
@@ -74,19 +73,22 @@ public class ConnectToVertica {
 		properties.put("binaryBatchInsert", "true");
 		properties.put("AutoCommit", "false");
 		
-		/**
+		
 		Settings settings = Settings.builder()
-				.put("cluster.name", "tweets-cluster").build();
+				.put("cluster.name", "tweets-cluster")
+				.put("client.transport.sniff", true).build();
+		System.out.println("Before transport client");
 		
+		Client transportClient = new PreBuiltTransportClient(settings)
+				.addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName("192.168.33.10"), 9300));
 		
-		TransportClient transportClient = new PreBuiltTransportClient(settings)
-				.addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName("localhost"), 9300));
-			*/	
+		System.out.println("After Transport client");
+			
 		
 		
 		Connection conn;
 		try {
-			/**
+			
 			String currentLine;
 			BufferedReader bf = new BufferedReader(
 					new FileReader("C:\\Users\\User\\Desktop\\Vastech_Internship\\VerticaElasticSearch\\doc\\elasticsearch.txt"));
@@ -100,8 +102,9 @@ public class ConnectToVertica {
 				System.out.println(id + "- split -" + text);
 				indexDocument(transportClient, id, text);
 			}
-			transportClient.close();
-			*/
+			//transportClient.close();
+			
+			
 			
 			
 			
@@ -113,11 +116,7 @@ public class ConnectToVertica {
 			
 			statement.execute("DROP TABLE IF EXISTS mytable");
 			
-			/**
-			 *  stmt.execute("CREATE TABLE customers (Last_Name char(50), "
-                            + "First_Name char(50),Email char(50), "
-                            + "Phone_Number char(15))");
-			 */
+			
 			statement.execute("CREATE TABLE mytable ("
 					+ "id VARBINARY(200) PRIMARY KEY,"
 					+ "created_at VARCHAR(100),"
@@ -171,6 +170,7 @@ public class ConnectToVertica {
 		
 			
 			conn.close();
+			
 		} catch(SQLTransientConnectionException connException) {
 			System.out.print("Network connection issue: " + connException.getMessage());
 			System.out.println();
@@ -182,6 +182,7 @@ public class ConnectToVertica {
 		} catch(SQLException e){
 			e.printStackTrace();
 		}
+		
 		
 	}
 	

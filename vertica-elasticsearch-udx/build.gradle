@@ -1,2 +1,15 @@
 apply plugin: 'java'
 apply plugin: 'eclipse'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+
+	 compile group: 'org.elasticsearch.client', name: 'transport', version: '5.1.1'
+
+     
+     
+     
+}
