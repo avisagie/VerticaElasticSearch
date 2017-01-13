@@ -5,11 +5,17 @@ import com.vertica.sdk.*;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.transport.client.PreBuiltTransportClient;
 
 
@@ -22,6 +28,8 @@ public class VerticaWithElasticSearchFactory extends ScalarFunctionFactory {
 
 	@Override
 	public void getPrototype(ServerInterface serverInterface, ColumnTypes columnTypes, ColumnTypes returnType) {
+		
+		columnTypes.addVarbinary();
 		columnTypes.addVarchar();
 		returnType.addVarchar();
 		
@@ -50,17 +58,14 @@ public class VerticaWithElasticSearchFactory extends ScalarFunctionFactory {
 		
 		
 		long likes = 0;
+		HashMap<String, String> tweets = new HashMap<>(); //Map for tweets and their ids
 		
 		
 		
-		/**
-		QueryBuilders.boolQuery()
-		.must(QueryBuilders.termQuery(field_toSearch,field_value))
-		.must(QueryBuilders.termQuery("msg",search_term));
-		*/
+		
 
 		@Override
-		public void processBlock(ServerInterface arg0, BlockReader arg1, BlockWriter arg2)
+		public void processBlock(ServerInterface arg0, BlockReader input, BlockWriter output)
 				throws UdfException, DestroyInvocation {
 			
 			
@@ -74,48 +79,52 @@ public class VerticaWithElasticSearchFactory extends ScalarFunctionFactory {
 						.addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName("192.168.33.10"), 9300));
 			} catch (UnknownHostException e) {
 				// TODO Auto-generated catch block
-				arg2.setString("error error error eroor");
 				e.printStackTrace();
 			}
 			
+			//Search for tweets in elastic search
 			SearchResponse response = transportClient.prepareSearch("twitterdata")
 					.setTypes("tweets")
-					.setQuery(QueryBuilders.termQuery("tweet", arg1.getString(0).trim()))
+					.setQuery(QueryBuilders.termQuery("tweet", input.getString(1)))
 					.get();
 			
-			arg2.setString(response.toString());
+			//Iterate through the results and get the id with its tweet
+			SearchHit[] searchhits = response.getHits().getHits();
+			for(SearchHit hit : searchhits){
+				String id = hit.getId();
+				String tweet = hit.getSource().get("tweet").toString();
+				tweets.put(id, tweet);
+			
+				//output.setString( id + "----" + tweet);
+			}
+					
+			
 			transportClient.close();
 			
-			
-
 		
-			/**
+			
 			do {
-				long favCount = arg1.getLong(0);
+				String vertica_id = input.getString(0);
 				
-				if(favCount == likes){
-					arg2.setLong(favCount);
+				//Compare the id from elastic to the ids in vertica
+				for(String id: tweets.keySet()) {
+					//output.setString(tweets.get(id));
+					
+					if(id == vertica_id) {
+						output.setString(tweets.get(id));
+						output.next();
+					}
+					
 				}
-				arg2.next();
-			} while(arg1.next());
-			*/
+				
+				
+			} while(input.next());
+			
+	
+			
 			
 		}
-		/**
-		private String getRequest() throws IOException {
-			
-			URL url = new URL("http://localhost:9200/twitterdata/tweets/12345/") ;
-			URLConnection urlConn = url.openConnection();
-			BufferedReader input = new BufferedReader(new InputStreamReader(urlConn.getInputStream()));
-			String line;
-			while((line = input.readLine()) != null)
-					return line;
-			input.close();
-			
-			return line;
-			
-		}
-		*/
+		
 
 
 
