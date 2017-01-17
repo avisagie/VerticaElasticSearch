@@ -1,4 +1,4 @@
-package com.vastech.udx;
+package com.proj.udx;
 
 //import vertica SDK
 import com.vertica.sdk.*;
@@ -8,6 +8,8 @@ import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Random;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
@@ -54,8 +56,14 @@ public class VerticaWithElasticSearchFactory extends ScalarFunctionFactory {
 
 
 	
+	private static final Random rnd = new Random();
+	private static final long processId = rnd.nextLong();
+	private static final AtomicLong idCounter  = new AtomicLong();
+			
+
 	public class VerticaWithElasticSearch extends ScalarFunction {
 		
+		private final long instanceId = idCounter.incrementAndGet();
 		
 		long likes = 0;
 		HashMap<String, String> tweets = new HashMap<>(); //Map for tweets and their ids
@@ -104,18 +112,14 @@ public class VerticaWithElasticSearchFactory extends ScalarFunctionFactory {
 		
 			
 			do {
-				String vertica_id = input.getString(0);
-				
-				//Compare the id from elastic to the ids in vertica
-				for(String id: tweets.keySet()) {
-					//output.setString(tweets.get(id));
-					
-					if(id == vertica_id) {
-						output.setString(tweets.get(id));
-						output.next();
-					}
-					
+				String vertica_id = input.getString(0).toString();
+				if(tweets.containsKey(vertica_id)) {
+					output.setString(tweets.get(vertica_id));
 				}
+				else {
+					output.setString(null);
+				}
+				output.next();
 				
 				
 			} while(input.next());
