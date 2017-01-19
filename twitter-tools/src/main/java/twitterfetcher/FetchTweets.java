@@ -36,11 +36,11 @@ import twitter4j.conf.ConfigurationBuilder;
 public class FetchTweets {
 	
 	
-	private static String oAuthConsumerKey = "ijjoyRAuDUM7GyiEkwxYYaktW";
-	private static String oAuthConsumerSecret = "i3ehIeW4wPpA7x85kh2dArTm312vFFtaByPPR7W7JdC9a6yDHr";
-	private static String oAuthAccessToken = "804667201374527488-Tf236qfLpVyZbPptLUUkIpOJPeauece";
-	private static String oAuthAccessTokenSecret = "i53qMCCHRzK6MwYilDb6ErISvYFrXJO7AvTRayr0ajA8O";
-
+	private static String oAuthConsumerKey = "YOUR-CONSUMER-KEY-GOES-HERE";
+	private static String oAuthConsumerSecret = "YOUR-CONSUMER-SECRET-GOES-HERE";
+	private static String oAuthAccessToken = "YOUR-ACCESS-TOKEN-GOES-HERE";
+	private static String oAuthAccessTokenSecret = "YOUR-ACCESS-TOKEN-SECRET-GOES-HERE";
+	
 	
 	//This aint permanent
 	private static final String FILENAME1 = "C:\\Users\\User\\Desktop\\Vastech_Internship\\VerticaElasticSearch\\doc\\tweets.txt";
@@ -172,7 +172,7 @@ public class FetchTweets {
 				 */
 				
 				ElasticsearchData data = elasticsearchData.take();
-				bw.write(data.getId() + "----" + "\""+data.getTweet()+"\"");
+				bw.write(data.getId() + "----" +  data.getTweet().replaceAll("[\n\r]", " "));
 				bw.newLine();
 				System.out.println(data.getId() + "---------" +"\""+data.getTweet()+"\"" );
 				
