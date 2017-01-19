@@ -8,6 +8,9 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.sql.Date;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -33,14 +36,26 @@ import twitter4j.conf.ConfigurationBuilder;
 public class FetchTweets {
 	
 	
-	private static String oAuthConsumerKey = "YOUR-CONSUMER-KEY-GOES-HERE";
-	private static String oAuthConsumerSecret = "YOUR-CONSUMER-SECRET-GOES-HERE";
-	private static String oAuthAccessToken = "YOUR-ACCESS-TOKEN-GOES-HERE";
-	private static String oAuthAccessTokenSecret = "YOUR-ACCESS-TOKEN-SECRET-GOES-HERE";
+	private static String oAuthConsumerKey = "ijjoyRAuDUM7GyiEkwxYYaktW";
+	private static String oAuthConsumerSecret = "i3ehIeW4wPpA7x85kh2dArTm312vFFtaByPPR7W7JdC9a6yDHr";
+	private static String oAuthAccessToken = "804667201374527488-Tf236qfLpVyZbPptLUUkIpOJPeauece";
+	private static String oAuthAccessTokenSecret = "i53qMCCHRzK6MwYilDb6ErISvYFrXJO7AvTRayr0ajA8O";
+
 	
 	//This aint permanent
 	private static final String FILENAME1 = "C:\\Users\\User\\Desktop\\Vastech_Internship\\VerticaElasticSearch\\doc\\tweets.txt";
 	private static final String FILENAME2 = "C:\\Users\\User\\Desktop\\Vastech_Internship\\VerticaElasticSearch\\doc\\elasticsearch.txt";
+	
+	
+	private static BlockingQueue<ElasticsearchData> elasticsearchData = new ArrayBlockingQueue<ElasticsearchData>(100);
+	private static BlockingQueue<VerticaData> verticaData = new ArrayBlockingQueue<VerticaData>(100);
+	
+	private static int counter = 0;
+	
+
+
+	
+	
 	
 	
 	
@@ -68,8 +83,9 @@ public class FetchTweets {
 	
 	private static void getTweets(){
 		
-		
-		
+		TwitterStream twitterStream = config();
+	
+				
 		StatusListener listener = new StatusListener(){
 
 			@Override
@@ -80,146 +96,116 @@ public class FetchTweets {
 
 			@Override
 			public void onStatus(Status status) {
-				//System.out.println(status.getId() + " " + status.getText());
+				
+				//System.out.println(status.getId() + " yadi-yada" + status.getText());
+				
+				
 				try {
-					writeTweetsToFile(status);
-				} catch (InterruptedException | IOException e) {
+					elasticsearchData.put(new ElasticsearchData(status.getId(), status.getText()));
+					verticaData.put(new VerticaData(status.getId(), status.getCreatedAt(), status.getFavoriteCount(),
+							status.getAccessLevel(), status.getInReplyToStatusId(), status.getInReplyToUserId(),
+							status.getLang(), status.getSource(), status.isFavorited(), status.isPossiblySensitive(),
+							status.isRetweet(), status.isRetweetedByMe(), status.isTruncated()));
+				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
+				counter++;
+				System.out.println("Counter " + counter);
+				
+					
 				
 			}
 
 			@Override
 			public void onDeletionNotice(StatusDeletionNotice statusDeletionNotice) {
-				// TODO Auto-generated method stub
+				System.out.println("Status deletion notice " + statusDeletionNotice.getStatusId());
+
 				
 			}
 
 			@Override
 			public void onTrackLimitationNotice(int numberOfLimitedStatuses) {
-				// TODO Auto-generated method stub
+				System.out.println("Got track limitation notice " + numberOfLimitedStatuses);
 				
 			}
 
 			@Override
 			public void onScrubGeo(long userId, long upToStatusId) {
-				// TODO Auto-generated method stub
+				System.out.println("Got scrub_geo event userId: " + userId + "upToStatusId:" + upToStatusId);
 				
 			}
 
 			@Override
 			public void onStallWarning(StallWarning warning) {
-				// TODO Auto-generated method stub
+				System.out.println("Got stall warning " + warning);
 				
 			}
 			
 		};
 		
-		TwitterStream twitterStream = config();
+		//TwitterStream twitterStream = config();
 		twitterStream.addListener(listener);
 		
 		twitterStream.sample();
+		if(counter == 100) {
+			twitterStream.shutdown();
+		}
 					
 				
 		
 	}
 	
-	private static void writeTweetsToFile(Status status) throws InterruptedException, IOException {
+	private static void writeTweetsToFile() throws InterruptedException, IOException {
 		
 		BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(FILENAME1));
 		BufferedWriter bw = new BufferedWriter(new FileWriter(FILENAME2));
 		
-		while(true){
-			bw.write(status.getId() + "----" + status.getText());
-			bw.newLine();
-			System.out.println((status.getId() + "|" + status.getText()));
-			
-			Tweet tweet = new Tweet();
-			tweet.setCreate_at(status.getCreatedAt());
-			tweet.setCurrentUserRetweetid(status.getCurrentUserRetweetId());
-			tweet.setFavouriteCount(status.getFavoriteCount());
-			tweet.setFavourited(status.isFavorited());
-			//tweet.setGeoLocation(status.getGeoLocation().toString());
-			tweet.setGetAccessLevel(status.getAccessLevel());
-			tweet.setId(status.getId());
-			tweet.setInReplyToScreenName(status.getInReplyToScreenName());
-			tweet.setInReplyToStatusId(status.getInReplyToStatusId());
-			tweet.setInReplyToUserId(status.getInReplyToUserId());
-			tweet.setLang(status.getLang());
-			//tweet.setPlace(status.getPlace().toString());
-			tweet.setPossiblySensitive(status.isPossiblySensitive());
-			//tweet.setQuotedStatus(status.getQuotedStatus().toString());
-			tweet.setQuotedStatusId(status.getQuotedStatusId());
-			//tweet.setRateLimitStatus(status.getRateLimitStatus().toString());
-			tweet.setRetweet(status.isRetweet());
-			tweet.setRetweetedByMe(status.isRetweetedByMe());
-			tweet.setSource(status.getSource().toString());
-			tweet.setTruncated(status.isTruncated());
-			
-			
-			bufferedWriter.write(tweet.getId() + "|" + tweet.getCreate_at() + "|" + tweet.getFavouriteCount() + "|" + tweet.getGetAccessLevel()
-			+ "|" + tweet.getInReplyToStatusId() + "|" + tweet.getInReplyToUserId() + "|" + tweet.getLang() + "|" + tweet.getSource() + "|" + tweet.isFavourited()
-			+ "|" + tweet.isPossiblySensitive() + "|" + tweet.isRetweet() + "|" + tweet.isRetweetedByMe() + "|" + tweet.isTruncated());
-			
-			bufferedWriter.newLine();
-			
-			
-			
-		}
 		
-		/**
 		
-		try () {
+		try {
 			
 			while(true) {
+				/**
+				 * Take data from the elasticsearch data queue and write
+				 * it to a file
+				 */
 				
-				Tweet tweet = new Tweet();
-				tweet.setCreate_at(status.getCreatedAt());
-				tweet.setCurrentUserRetweetid(status.getCurrentUserRetweetId());
-				tweet.setFavouriteCount(status.getFavoriteCount());
-				tweet.setFavourited(status.isFavorited());
-				//tweet.setGeoLocation(status.getGeoLocation().toString());
-				tweet.setGetAccessLevel(status.getAccessLevel());
-				tweet.setId(status.getId());
-				tweet.setInReplyToScreenName(status.getInReplyToScreenName());
-				tweet.setInReplyToStatusId(status.getInReplyToStatusId());
-				tweet.setInReplyToUserId(status.getInReplyToUserId());
-				tweet.setLang(status.getLang());
-				//tweet.setPlace(status.getPlace().toString());
-				tweet.setPossiblySensitive(status.isPossiblySensitive());
-				//tweet.setQuotedStatus(status.getQuotedStatus().toString());
-				tweet.setQuotedStatusId(status.getQuotedStatusId());
-				//tweet.setRateLimitStatus(status.getRateLimitStatus().toString());
-				tweet.setRetweet(status.isRetweet());
-				tweet.setRetweetedByMe(status.isRetweetedByMe());
-				tweet.setSource(status.getSource().toString());
-				tweet.setTruncated(status.isTruncated());
+				ElasticsearchData data = elasticsearchData.take();
+				bw.write(data.getId() + "----" + "\""+data.getTweet()+"\"");
+				bw.newLine();
+				System.out.println(data.getId() + "---------" +"\""+data.getTweet()+"\"" );
 				
-				
-				bufferedWriter1.write(tweet.getId() + "|" + tweet.getCreate_at() + "|" + tweet.getFavouriteCount() + "|" + tweet.getGetAccessLevel()
-				+ "|" + tweet.getInReplyToStatusId() + "|" + tweet.getInReplyToUserId() + "|" + tweet.getLang() + "|" + tweet.getSource() + "|" + tweet.isFavourited()
-				+ "|" + tweet.isPossiblySensitive() + "|" + tweet.isRetweet() + "|" + tweet.isRetweetedByMe() + "|" + tweet.isTruncated());
+				/**
+				 * Take data from the verticadata queue and write it
+				 * to a file
+				 */
+				VerticaData  data2 = verticaData.take();
+				bufferedWriter.write(data2.getId() + "|" + data2.getCreateAt() + "|" + data2.getFavouriteCount() + "|" + data2.getGetAccessLevel()
+				+ "|" + data2.getInReplyToStatusId() + "|" + data2.getInReplyToUserId() + "|" + data2.getLang() + "|" + data2.getSource() + "|" + data2.isFavourited()
+				+ "|" + data2.isPossiblySensitive() + "|" + data2.isRetweet() + "|" + data2.isRetweetedByMe() + "|" + data2.isTruncated());
 				
 				bufferedWriter.newLine();
-				
-				
-				System.out.println(tweet.getId() + "|" + tweet.getCreate_at() + "|" + tweet.getFavouriteCount() + "|" + tweet.getGetAccessLevel() + "|" + tweet.getInReplyToScreenName()
-				+ "|" + tweet.getInReplyToStatusId() + "|" + tweet.getInReplyToUserId() + "|" + tweet.getLang() + "|" + tweet.getSource() + "|" + tweet.isFavourited()
-				+ "|" + tweet.isPossiblySensitive() + "|" + tweet.isRetweet() + "|" + tweet.isRetweetedByMe() + "|" + tweet.isTruncated() + "\n"); 
-				
-				
 				
 				
 			}
 			
 			
-		} catch ( IOException e) {
+			
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
+		} finally {
+			bw.close();
+			bufferedWriter.close();
 		}
-		*/
+		
+		
 		
 	
+		
+		
+			
 		
 	}
 	
@@ -227,7 +213,31 @@ public class FetchTweets {
 	
 	public static void main(String[] args) throws TwitterException, InterruptedException {
 		
-		getTweets();
+		//getTweets();
+		
+		Thread getDataThread = new Thread(new Runnable(){
+			public void run() {
+				getTweets();
+			}
+		});
+		
+		Thread processDataThread = new Thread(new Runnable(){
+			public void run() {
+				try {
+					writeTweetsToFile();
+				} catch (InterruptedException | IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		});
+		
+		getDataThread.start();
+		processDataThread.start();
+		
+		getDataThread.join();
+		processDataThread.join();
+		
 
 			
 	}
