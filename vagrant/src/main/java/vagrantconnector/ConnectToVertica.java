@@ -20,6 +20,7 @@ import java.sql.Connection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
+import java.util.Scanner;
 
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexResponse;
@@ -92,16 +93,33 @@ public class ConnectToVertica {
 			String currentLine;
 			BufferedReader bf = new BufferedReader(
 					new FileReader("C:\\Users\\User\\Desktop\\Vastech_Internship\\VerticaElasticSearch\\doc\\elasticsearch.txt"));
+			Scanner scFile = new Scanner(bf);
+			
+
 			
 			while((currentLine = bf.readLine()) != null) {
 				
 				//System.out.println(currentLine);
 				String[] splitString = currentLine.split("----");
+				System.out.println("this is the array " + splitString);
 				String id = splitString[0];
+				System.out.println("this is the id " + id);
 				String text = splitString[1];
+				System.out.println("this is the text " + text);
 				System.out.println(id + "- split -" + text);
 				indexDocument(transportClient, id, text);
+
 			}
+			/*
+			while(scFile.hasNextLine()){
+				String line = scFile.nextLine();
+				Scanner scLine = new Scanner(line);
+				scLine.useDelimiter("----");
+				String id = scLine.next();
+				String text = scLine.next();
+				System.out.println(id+" ------"+text);
+			}
+			*/
 			//transportClient.close();
 			
 			
