@@ -23,6 +23,7 @@ import com.twitter.hbc.core.processor.StringDelimitedProcessor;
 import com.twitter.hbc.httpclient.auth.Authentication;
 import com.twitter.hbc.httpclient.auth.OAuth1;
 
+import twitter4j.FilterQuery;
 import twitter4j.StallWarning;
 import twitter4j.Status;
 import twitter4j.StatusDeletionNotice;
@@ -40,6 +41,8 @@ public class FetchTweets {
 	private static String oAuthConsumerSecret = "YOUR-CONSUMER-SECRET-GOES-HERE";
 	private static String oAuthAccessToken = "YOUR-ACCESS-TOKEN-GOES-HERE";
 	private static String oAuthAccessTokenSecret = "YOUR-ACCESS-TOKEN-SECRET-GOES-HERE";
+	
+
 	
 	
 	//This aint permanent
@@ -143,11 +146,15 @@ public class FetchTweets {
 			}
 			
 		};
-		
-		//TwitterStream twitterStream = config();
 		twitterStream.addListener(listener);
+		FilterQuery filterQuery = new FilterQuery();
+		filterQuery.track(new String[]{"a"});
+		filterQuery.language(new String[]{"en"});
+		twitterStream.filter(filterQuery);
 		
-		twitterStream.sample();
+		
+		
+		//twitterStream.sample();
 		if(counter == 100) {
 			twitterStream.shutdown();
 		}
