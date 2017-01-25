@@ -1,9 +1,6 @@
-apply plugin: 'java'
-apply plugin: 'eclipse'
+apply plugin: 'application'
 
-repositories {
-    mavenCentral()
-}
+mainClassName = "vagrantconnector.ConnectToVertica"
 
 dependencies {
 
@@ -11,6 +8,7 @@ dependencies {
 	 compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.7'
      compile group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.7'
      compile group: 'joda-time', name: 'joda-time', version: '2.3'
+     compile files('libs/vertica-jdbc-8.0.0-0.jar')
      
      
      
