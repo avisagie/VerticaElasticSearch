@@ -79,5 +79,16 @@ In `vsql` run the following statements
 2. CREATE OR REPLACE LIBRARY myLib AS '/home/dbadmin/vertica-elasticsearch-udx-1.0.jar' LANGUAGE 'JAVA';
 3. CREATE OR REPLACE FUNCTION verticaWithEs AS LANGUAGE 'JAVA' NAME 'com.proj.udx.VerticaWithElasticSearchFactory' LIBRARY myLib;
 ```
-All set and ready to run your SELECT statements
+All set and ready to run your SELECT statements. query `president` can be replaced with any query
+```
+select * from (SELECT id, verticaWithEs(id USING PARAMETERS query='president') AS text FROM mytable) as joint_result where text is not null;
+```
+
+##Built with
+* Java - programming language
+* [Gradle](https://gradle.org/) - build tool
+* [twitter4j](http://twitter4j.org/en/index.html) - used to stream tweets
+* [elasticsearch](https://www.elastic.co/)
+* [vagrant](https://www.vagrantup.com/)
+* [vertica](https://my.vertica.com/)
 
