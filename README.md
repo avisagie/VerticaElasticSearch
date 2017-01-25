@@ -51,7 +51,21 @@ sudo su - dbadmin
 Run vsql (the Vertica commandline client) and when prompted for a password enter `mydatA6asepa55w0rd`
 
 ## Running
+Before running the project, navigate to `/twitter-tools/src/main/java/twitterfetcher` and in
+the class `FetchTweets` enter your OAuth access Tokens in the following fields
 
+```
+private static String oAuthConsumerKey = "YOUR-CONSUMER-KEY-GOES-HERE";
+private static String oAuthConsumerSecret = "YOUR-CONSUMER-SECRET-GOES-HERE";
+private static String oAuthAccessToken = "YOUR-ACCESS-TOKEN-GOES-HERE";
+private static String oAuthAccessTokenSecret = "YOUR-ACCESS-TOKEN-SECRET-GOES-HERE";
+```
 
+In the Root directory `VerticaElasticSearch`
+1. `Run ./gradlew twitter-tools:run` to stream the tweets from twitter, kill the task if you happy with the number of tweets
+2. `Execute ./gradlew vagrant:run` to write data to elasticsearch and vertica
+3. `./gradlew vertica-elasticsearch-udx:fatJar` - creates a UDSF with all dependencies
+4. `./gradlew vertica-elasticsearch-udx:scpJar` - safe copy UDSF to the vagrant machine
 
+## Deployment
 
