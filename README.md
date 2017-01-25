@@ -63,11 +63,24 @@ private static String oAuthAccessTokenSecret = "YOUR-ACCESS-TOKEN-SECRET-GOES-HE
 
 In the Root directory `VerticaElasticSearch`
 
-1. Run ./gradlew twitter-tools:run to stream the tweets from twitter, kill the task if you happy with the number of tweets
-2. Execute ./gradlew vagrant:run to write data to elasticsearch and vertica
-3. ./gradlew vertica-elasticsearch-udx:fatJar - creates a UDSF with all dependencies
-4. ./gradlew vertica-elasticsearch-udx:scpJar - safe copy UDSF to the vagrant machine
+to stream the tweets from twitter, kill the task if you happy with the number of tweets
+```
+Run ./gradlew twitter-tools:run
+```
+to write data to elasticsearch and vertica
+```
+Execute ./gradlew vagrant:run
+```
+creates a UDSF with all dependencies bundled up
+```
+./gradlew vertica-elasticsearch-udx:fatJar
+```
+safe copy UDSF to the vagrant machine
+```
+./gradlew vertica-elasticsearch-udx:scpJar 
+```
 
 
 ## Deployment
-
+after copying the UDSF jar to the vagrant machine it is ready to be deployed
+in `vsql` run the following statements
