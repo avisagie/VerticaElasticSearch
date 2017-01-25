@@ -72,5 +72,12 @@ In the Root directory `VerticaElasticSearch` run the following commands, kill th
 
 
 ## Deployment
-after copying the UDSF jar to the vagrant machine it is ready to be deployed
-in `vsql` run the following statements
+after copying the UDSF jar to the vagrant machine it is ready to be deployed.
+In `vsql` run the following statements
+```sql
+1. ALTER DATABASE mydatabase JavaBinaryForUDx = 'usr/bin/java';
+2. CREATE OR REPLACE LIBRARY myLib AS '/home/dbadmin/vertica-elasticsearch-udx-1.0.jar' LANGUAGE 'JAVA';
+3. CREATE OR REPLACE FUNCTION verticaWithEs AS LANGUAGE 'JAVA' NAME 'com.proj.udx.VerticaWithElasticSearchFactory' LIBRARY myLib;
+```
+All set and ready to run your SELECT statements
+
