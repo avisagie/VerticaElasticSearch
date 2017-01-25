@@ -33,6 +33,25 @@ Create and SSH into the vagrant machine
 vagrant up
 vagrant ssh
 ```
+Configure Elasticsearch server settings in file `/etc/elasticsearch/elasticsearch.yml` by uncommenting `cluster.name`, `node.name`
+and `network.host` and replacing their default values with the following values.
+```
+cluster.name: tweets-cluster
+node.name: tweets-node
+network.host:  192.168.33.10
+```
+
+In the vm, after `vagrant ssh`, you typically want to do things as
+dbadmin. You can, by
+
+```
+sudo su - dbadmin
+```
+
+Run vsql (the Vertica commandline client) and when prompted for a password enter `mydatA6asepa55w0rd`
+
+## Running
+
 
 
 
