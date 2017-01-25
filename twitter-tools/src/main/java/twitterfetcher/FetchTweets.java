@@ -2,26 +2,11 @@ package twitterfetcher;
 
 
 import java.io.BufferedWriter;
-import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
-import java.sql.Date;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
 
-import com.twitter.hbc.ClientBuilder;
-import com.twitter.hbc.core.Client;
-import com.twitter.hbc.core.Constants;
-import com.twitter.hbc.core.endpoint.StatusesSampleEndpoint;
-import com.twitter.hbc.core.event.Event;
-import com.twitter.hbc.core.processor.StringDelimitedProcessor;
-import com.twitter.hbc.httpclient.auth.Authentication;
-import com.twitter.hbc.httpclient.auth.OAuth1;
 
 import twitter4j.FilterQuery;
 import twitter4j.StallWarning;
@@ -50,6 +35,7 @@ public class FetchTweets {
 	
 	private static BlockingQueue<ElasticsearchData> elasticsearchData = new ArrayBlockingQueue<ElasticsearchData>(5000);
 	private static BlockingQueue<VerticaData> verticaData = new ArrayBlockingQueue<VerticaData>(5000);
+	private static TwitterStream twitterStream;
 	
 	private static int counter = 0;
 	
@@ -84,7 +70,7 @@ public class FetchTweets {
 	
 	private static void getTweets(){
 		
-		TwitterStream twitterStream = config();
+		twitterStream = config();
 	
 				
 		StatusListener listener = new StatusListener(){
@@ -149,13 +135,6 @@ public class FetchTweets {
 		filterQuery.track(new String[]{"a"});
 		filterQuery.language(new String[]{"en"});
 		twitterStream.filter(filterQuery);
-		
-		
-		
-		//twitterStream.sample();
-		if(counter == 100) {
-			twitterStream.shutdown();
-		}
 					
 				
 		
@@ -163,8 +142,8 @@ public class FetchTweets {
 	
 	private static void writeTweetsToFile() throws InterruptedException, IOException {
 		
-		BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(FILENAME1));
-		BufferedWriter bw = new BufferedWriter(new FileWriter(FILENAME2));
+		BufferedWriter verticaBufferedWriter = new BufferedWriter(new FileWriter(FILENAME1));
+		BufferedWriter elasticSearchBufferedWriter = new BufferedWriter(new FileWriter(FILENAME2));
 		
 		
 		
@@ -176,21 +155,23 @@ public class FetchTweets {
 				 * it to a file
 				 */
 				
-				ElasticsearchData data = elasticsearchData.take();
-				bw.write(data.getId() + "----" +  data.getTweet().replaceAll("[\n\r]", " "));
-				bw.newLine();
-				System.out.println(data.getId() + "---------" +"\""+data.getTweet()+"\"" );
+				ElasticsearchData esData = elasticsearchData.take();
+				elasticSearchBufferedWriter.write(esData.getId() + "----" +  esData.getTweet().replaceAll("[\n\r]", " "));
+				elasticSearchBufferedWriter.newLine();
+				System.out.println(esData.getId() + "---------" +"\""+esData.getTweet()+"\"" );
 				
 				/**
 				 * Take data from the verticadata queue and write it
 				 * to a file
 				 */
-				VerticaData  data2 = verticaData.take();
-				bufferedWriter.write(data2.getId() + "|" + data2.getCreateAt() + "|" + data2.getFavouriteCount() + "|" + data2.getGetAccessLevel()
-				+ "|" + data2.getInReplyToStatusId() + "|" + data2.getInReplyToUserId() + "|" + data2.getLang() + "|" + data2.getSource() + "|" + data2.isFavourited()
-				+ "|" + data2.isPossiblySensitive() + "|" + data2.isRetweet() + "|" + data2.isRetweetedByMe() + "|" + data2.isTruncated());
+				VerticaData  vData = verticaData.take();
+		
+				verticaBufferedWriter.write(vData.getId() + "|" + vData.getCreateAt() + "|" + vData.getFavouriteCount() + "|" + vData.getGetAccessLevel()
+				+ "|" + vData.getInReplyToStatusId() + "|" + vData.getInReplyToUserId() + "|" + vData.getLang() + "|" + vData.getSource() + "|" + vData.isFavourited()
+				+ "|" + vData.isPossiblySensitive() + "|" + vData.isRetweet() + "|" + vData.isRetweetedByMe() + "|" + vData.isTruncated());
 				
-				bufferedWriter.newLine();
+				verticaBufferedWriter.newLine();
+				
 				
 				
 			}
@@ -201,8 +182,8 @@ public class FetchTweets {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} finally {
-			bw.close();
-			bufferedWriter.close();
+			elasticSearchBufferedWriter.close();
+			verticaBufferedWriter.close();
 		}
 		
 		
@@ -223,6 +204,7 @@ public class FetchTweets {
 		Thread getDataThread = new Thread(new Runnable(){
 			public void run() {
 				getTweets();
+				
 			}
 		});
 		
