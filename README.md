@@ -19,10 +19,14 @@ in a sql SELECT statement. This is multi project that consists of 4 sub projects
 ### Setting up
 
 Clone this repository
-`git clone https://github.com/Nillihc/VerticaElasticSearch.git`
+```
+git clone https://github.com/Nillihc/VerticaElasticSearch.git
+```
 
 Change into VerticaVagrant directory
-`cd VerticaVagrant`
+```
+cd VerticaVagrant
+```
 
 Create and SSH into the vagrant machine
 ```
