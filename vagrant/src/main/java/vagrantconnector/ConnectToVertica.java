@@ -92,9 +92,9 @@ public class ConnectToVertica {
 			
 			String currentLine;
 			BufferedReader bf = new BufferedReader(
-					new FileReader("C:\\Users\\User\\Desktop\\Vastech_Internship\\VerticaElasticSearch\\doc\\elasticsearch.txt"));
+					new FileReader("..//doc//elasticsearch.txt"));
 			Scanner scFile = new Scanner(bf);
-			
+		
 
 			
 			while((currentLine = bf.readLine()) != null) {
@@ -157,7 +157,7 @@ public class ConnectToVertica {
 			
 			stream.start();
 			
-			String filename = "C:\\Users\\User\\Desktop\\Vastech_Internship\\VerticaElasticSearch\\doc\\tweets.txt";
+			String filename = "..//doc//tweets.txt";
 			
 			File inputFile = new File(filename);
 			
