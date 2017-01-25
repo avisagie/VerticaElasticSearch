@@ -10,3 +10,11 @@ in a sql SELECT statement. This is multi project that consists of 4 sub projects
 
 ## Getting Started
 
+### Prerequisites
+1. [VirtualBox](https://www.virtualbox.org/wiki/Downloads) must be installed.
+2. [Vagrant](https://www.vagrantup.com/) must be installed.
+2. You must have a twitter account.
+3. Get [OAuth access tokens](https://apps.twitter.com/) in order to establish a connection to the Streaming API
+
+### Setting up
+
