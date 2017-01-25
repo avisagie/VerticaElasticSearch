@@ -54,7 +54,7 @@ Run vsql (the Vertica commandline client) and when prompted for a password enter
 Before running the project, navigate to `/twitter-tools/src/main/java/twitterfetcher` and in
 the class `FetchTweets` enter your OAuth access Tokens in the following fields
 
-```
+```java
 private static String oAuthConsumerKey = "YOUR-CONSUMER-KEY-GOES-HERE";
 private static String oAuthConsumerSecret = "YOUR-CONSUMER-SECRET-GOES-HERE";
 private static String oAuthAccessToken = "YOUR-ACCESS-TOKEN-GOES-HERE";
