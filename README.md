@@ -1,4 +1,4 @@
-# Extending the functionality of Vertica with ElasticSearch
+# Extending Vertica with ElasticSearch
 
 This is an exploratory intern project to extend Vertica with
 ElasticSearch's text search features. The basic idea is to write a
