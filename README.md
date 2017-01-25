@@ -8,10 +8,5 @@ in a sql SELECT statement. This is multi project that consists of 4 sub projects
 * vagrant - write tweets data into vertica and tweet text into elasticsearch
 * vertica-elasticsearch-udx - Defines the vertica UDx
 
+## Getting Started
 
-This is an exploratory intern project to extend Vertica with
-ElasticSearch's text search features. The basic idea is to write a
-[Vertica User Defined Extension](http://bit.ly/2fByQQH) in java that
-queries ElasticSearch when you write certain SQL queries.
-
-See [the plan](doc/plan.md).
