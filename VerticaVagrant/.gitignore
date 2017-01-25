@@ -1,0 +1,9 @@
+*.rpm
+*.tar.gz
+*~
+doc/README.html
+*.jar
+*.zip
+config.sh
+VerticaData2.vdi
+.vagrant
