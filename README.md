@@ -16,6 +16,7 @@ in a sql SELECT statement. This is multi project that consists of 4 sub projects
 2. You must have a twitter account.
 3. Get [OAuth access tokens](https://apps.twitter.com/) in order to establish a connection to the Streaming API
 
+
 ### Setting up
 
 Clone this repository
@@ -27,6 +28,8 @@ Change into VerticaVagrant directory
 ```
 cd VerticaVagrant
 ```
+
+Download [vertica-8.0.0-0.x86_64.RHEL6.rpm](https://my.vertica.com/) and put it inside  `VerticaVagrant`
 
 Create and SSH into the vagrant machine
 ```
