@@ -1,12 +1,9 @@
-apply plugin: 'java'
-apply plugin: 'eclipse'
-
-version='0.0.1'
-
-repositories {
-    mavenCentral()
-}
+apply plugin: 'application'
+mainClassName = 'twitterfetcher.FetchTweets'
 
 dependencies {
     compile group: "org.twitter4j", name: "twitter4j-core", version: "[4.0,)"
+    compile group: 'com.twitter',  name: 'hbc-twitter4j', version: '2.2.0'
+   
+    
 }

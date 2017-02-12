@@ -1,0 +1,12 @@
+[Unit]
+Description=Vertica Agent
+
+[Service]
+Type=forking
+PIDFile=/opt/vertica/log/agent.pid
+ExecStart=/opt/vertica/sbin/vertica_agent start
+ExecStop=/opt/vertica/sbin/vertica_agent stop
+
+[Install]
+WantedBy=multi-user.target
+
